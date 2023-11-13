@@ -37,8 +37,6 @@ import java.io.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private var appSecret: String? = null
-    private var appKey: String? = null
     private lateinit var biomoduleBleManager: BiomoduleBleManager
     private lateinit var messageReceiveFragment: MessageReceiveFragment
     private lateinit var messageSendFragment: MessageSendFragment
@@ -48,26 +46,9 @@ class MainActivity : AppCompatActivity() {
         IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
 //        IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveCloudService)
     }
-
-    //    var websocketAddress = "wss://server.affectivecloud.cn/ws/algorithm/v2/"
-    var websocketAddress = "wss://server-test.affectivecloud.cn/ws/algorithm/v2/"
-
     companion object{
         private const val TAG="MainActivity"
     }
-    private var availableAffectiveDataCategories =
-        listOf(
-            AffectiveDataCategory.ATTENTION,
-            AffectiveDataCategory.PRESSURE,
-            AffectiveDataCategory.AROUSAL,
-            AffectiveDataCategory.RELAXATION,
-            AffectiveDataCategory.PLEASURE,
-            AffectiveDataCategory.SLEEP,
-            AffectiveDataCategory.COHERENCE,
-            AffectiveDataCategory.FLOW
-        )
-    private var availableBioDataCategories = listOf(BioDataCategory.EEG, BioDataCategory.HR)
-
     private val connectionListener by lazy {
         {
             val i = Log.d(TAG,"connectionListener")
@@ -145,14 +126,6 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initEnterAffectiveCloudManager() {
-        val proxy = EnterAffectiveConfigProxy(
-            availableBioDataCategories,
-            availableAffectiveDataCategories,
-            userId = -1,
-            appSecret = appSecret!!,
-            appKey = appKey!!
-        )
-
         affectiveService?.addServiceConnectStatueListener(
             connectionListener,
             disconnectionListener
@@ -160,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG,"affectiveService is null")
         }
         affectiveService?.connectAffectiveServiceConnection(
-            configProxy = proxy,
+            configProxy = EnterAffectiveConfigProxy(),
             listener = connectionServiceListener
         )
         affectiveService?.subscribeData(bdListener, affectiveListener)
