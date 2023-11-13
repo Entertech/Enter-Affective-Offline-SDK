@@ -1,17 +1,15 @@
 package cn.entertech.biomoduledemo.activity
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import androidx.core.app.ActivityCompat
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -29,20 +27,14 @@ import cn.entertech.affective.sdk.bean.Error
 import cn.entertech.affective.sdk.bean.RealtimeAffectiveData
 import cn.entertech.affective.sdk.bean.RealtimeBioData
 import cn.entertech.affective.sdk.bean.UploadReportEntity
-
 import cn.entertech.biomoduledemo.R
-import cn.entertech.biomoduledemo.app.Constant.Companion.INTENT_APP_KEY
-import cn.entertech.biomoduledemo.app.Constant.Companion.INTENT_APP_SECRET
 import cn.entertech.biomoduledemo.fragment.MessageReceiveFragment
 import cn.entertech.biomoduledemo.fragment.MessageSendFragment
 import cn.entertech.biomoduledemo.utils.*
 import cn.entertech.ble.single.BiomoduleBleManager
 import com.orhanobut.logger.Logger
 import java.io.*
-import java.lang.Exception
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
     private var appSecret: String? = null
@@ -109,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val authenticationInputStream: InputStream? by lazy {
-        resources.openRawResource(R.raw.check)
+        TODO("添加鉴权文件流")
     }
 
     private val connectionServiceListener by lazy {
