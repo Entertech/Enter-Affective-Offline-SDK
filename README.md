@@ -241,11 +241,19 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 
 #### 分析本地文件数据
 
-    /**
-     * @param inputStream 待分析的文件流
-     * @param case 把int转成T的方法
-     * */
-    IAffectiveDataAnalysisService.readFileAnalysisData<T>(inputStream: InputStream, callback: Callback2<T>,case:(Int)->T?)
+       /**
+         * @param inputStream 待分析的数据流
+         * @param callback 结果回调
+         * @param appSingleData 处理单个数据，若返回true，则表示消耗该数据，不添加到all数据里面
+         * @param case 数据流读取出来的字符串转成需要的类型R
+         * @param appendAllData 处理所有未被消耗的数据
+         * */
+        fun <R> readFileAnalysisData(inputStream: InputStream,
+                                     appSingleData: ((R) -> Boolean)? = null,
+                                     appendAllData: (List<R>) -> Unit,
+                                     case: (String) -> R,
+                                     callback: Callback,
+        )
 
 #### 处理数据
 
@@ -348,34 +356,34 @@ fun closeAffectiveServiceConnection()
 
 
 data class RealtimeBioData(
-        var realtimeEEGData: RealtimeEEGData? = null,
-        var realtimeHrData: RealtimeHrData? = null,
-        var realtimeMCEEGData: RealtimeMCEEGData? = null,
-        var realtimeSCEEGData: RealtimeSCEEGData?=null,
-        var realtimeBCGData: RealtimeBCGData? = null,
-        var realtimePEPRData: RealtimePEPRData? = null,
-        var realtimeDceegSsvepData: RealtimeDceegSsvepData? = null
-) 
+    var realtimeEEGData: RealtimeEEGData? = null,
+    var realtimeHrData: RealtimeHrData? = null,
+    var realtimeMCEEGData: RealtimeMCEEGData? = null,
+    var realtimeSCEEGData: RealtimeSCEEGData?=null,
+    var realtimeBCGData: RealtimeBCGData? = null,
+    var realtimePEPRData: RealtimePEPRData? = null,
+    var realtimeDceegSsvepData: RealtimeDceegSsvepData? = null
+)
 
 data class RealtimeSCEEGData(
-        /**
-         * 经过滤波后的通道实时脑电波，一个数组，长度为150，对应0.6秒内的脑电波形；
-         * 数值范围[-500, 500]，信号质量不佳时全为0
-         * */
-        val sceegWave: List<Double> = emptyList(),
-        //5种脑电波节律的能量分贝值：α波、β波、θ波、δ波、γ波
-        //5种脑电波节律各一个数值，数值范围[0, +∞)，初始阶段与信号质量不佳时返回为0
-        val sceegAlphaPower: Double = 0.0,
-        val sceegBetaPower: Double = 0.0,
-        val sceegThetaPower: Double = 0.0,
-        val sceegDeltaPower: Double = 0.0,
-        val sceegGammaPower: Double = 0.0,
-        /**
-         * 脑电信号质量等级
-         * 大于1表示脑电信号质量良好
-         * */
-        val sceegQuality: Double = 0.0,
-        )
+    /**
+     * 经过滤波后的通道实时脑电波，一个数组，长度为150，对应0.6秒内的脑电波形；
+     * 数值范围[-500, 500]，信号质量不佳时全为0
+     * */
+    val sceegWave: List<Double> = emptyList(),
+    //5种脑电波节律的能量分贝值：α波、β波、θ波、δ波、γ波
+    //5种脑电波节律各一个数值，数值范围[0, +∞)，初始阶段与信号质量不佳时返回为0
+    val sceegAlphaPower: Double = 0.0,
+    val sceegBetaPower: Double = 0.0,
+    val sceegThetaPower: Double = 0.0,
+    val sceegDeltaPower: Double = 0.0,
+    val sceegGammaPower: Double = 0.0,
+    /**
+     * 脑电信号质量等级
+     * 大于1表示脑电信号质量良好
+     * */
+    val sceegQuality: Double = 0.0,
+)
 
 
 class RealtimeEEGData {
@@ -410,14 +418,14 @@ class RealtimeEEGData {
 }
 
 data class RealtimeHrData(
-        /**
-         * 实时心率值,数值范围[0, 255]，单位：BPM
-         * */
-        @SerializedName("hr") var hr: Double? = null,
-        /**
-         * 实时心率变异性，数值范围[0, +∞)
-         * */
-        @SerializedName("hrv") var hrv: Double? = null
+    /**
+     * 实时心率值,数值范围[0, 255]，单位：BPM
+     * */
+    @SerializedName("hr") var hr: Double? = null,
+    /**
+     * 实时心率变异性，数值范围[0, +∞)
+     * */
+    @SerializedName("hrv") var hrv: Double? = null
 ) {
     override fun toString(): String {
         return "RealtimeHrData(hr=$hr, hrv=$hrv)"
@@ -803,6 +811,10 @@ graph LR
 连接情感云服务-->
 启动情感云服务-->处理数据
 处理数据-->获取报表
+处理数据-->订阅数据解析
+订阅数据解析-->取消订阅
+取消订阅-->结束情感云服务
+取消订阅-->获取报表
 获取报表-->结束情感云服务-->
 关闭情感服务连接
 
