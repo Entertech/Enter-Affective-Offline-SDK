@@ -30,14 +30,14 @@ repositories {
 
 ### 使用
 
-#### 获取本地情感云服务
+#### 获取离线计算服务
 
 ```kotlin
 IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
 
 ```
 
-#### 连接情感云服务
+#### 连接离线计算服务
 
      IAffectiveDataAnalysisService.connectAffectiveServiceConnection(
     			IConnectionServiceListener,
@@ -84,11 +84,12 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
             FileInputStream(File)
         } 
 
-#### 启动情感云服务
+#### 启动离线计算服务
 
     IAffectiveDataAnalysisService.startAffectiveService(
                         authenticationInputStream,
                         Context, IStartAffectiveServiceLister
+
 )
 
     interface IStartAffectiveServiceLister {
@@ -134,14 +135,14 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
             listener: ((RealtimeAffectiveData?) -> Unit)? = null
         )
 
-#### 重启情感云服务
+#### 重启离线计算服务
 
       /**
-         * 重启情感服务
+         * 重启离线计算服务
          * */
         IAffectiveDataAnalysisService.restoreAffectiveService(listener: IStartAffectiveServiceLister)
 
-#### 结束情感云服务
+#### 结束离线计算服务
 
        IAffectiveDataAnalysisService.finishAffectiveService(listener: IFinishAffectiveServiceListener)
 
@@ -203,15 +204,15 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
         disconnectListener: (String) -> Unit
     )
 
-#### 当前情感云服务是否启动
+#### 当前离线计算服务是否启动
 
     fun hasConnectAffectiveService(): Boolean
 
-#### 当前情感云服务是否连接
+#### 当前离线计算服务是否连接
 
     fun hasConnectAffectiveService(): Boolean
 
-#### 关闭情感云服务连接
+#### 关闭离线计算服务连接
 
 ```kotlin
     /**
@@ -226,7 +227,7 @@ fun closeAffectiveServiceConnection()
 
     /**
      * 获取报表
-     * @param needFinishService 是否需要自动结束情感服务 true 自动结束
+     * @param needFinishService 是否需要自动结束离线计算服务 true 自动结束
      * */
     fun getReport(listener: IGetReportListener, needFinishService: Boolean)
 
