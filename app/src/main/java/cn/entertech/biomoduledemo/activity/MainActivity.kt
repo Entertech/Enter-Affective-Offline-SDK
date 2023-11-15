@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val authenticationInputStream: InputStream? by lazy {
-       null
+        TODO("添加鉴权文件流")
     }
 
     private val connectionServiceListener by lazy {
