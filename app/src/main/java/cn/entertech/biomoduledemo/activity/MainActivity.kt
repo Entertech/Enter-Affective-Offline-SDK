@@ -82,13 +82,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val authenticationInputStream: InputStream? by lazy {
-        TODO("添加鉴权文件流")
+       null
     }
 
     private val connectionServiceListener by lazy {
         object : IConnectionServiceListener {
             override fun connectionSuccess(sessionId: String?) {
                 Log.d(TAG, "connectionSuccess: $sessionId")
+                affectiveService?.subscribeData(bdListener, affectiveListener)
                 affectiveService?.startAffectiveService(
                     authenticationInputStream,
                     this@MainActivity, startAffectiveServiceLister
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             configProxy = EnterAffectiveConfigProxy(),
             listener = connectionServiceListener
         )
-        affectiveService?.subscribeData(bdListener, affectiveListener)
+
     }
 
     private fun initView() {
