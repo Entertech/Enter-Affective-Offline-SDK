@@ -8,11 +8,35 @@
 
 在开始开发前，你需要联系管理员注册好测试应用。确定好你的应用中所**需要的服务**，然后在[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)\[下载授权文件]，然后再进行开发。
 
+### 注意事项
+
+#### 代码混淆
+
+    -keep class cn.entertech.affectivesdk.authentication.bean.** { *; }
+
+#### so 文件说明
+
+算法核心功能实现依赖 so 库。在使用 SDK ，以及向工程中添加 so 时请注意以下几点：
+
+##### 确保添加了正确的 so 库文件
+
+###### **何为正确的 so 文件？**
+
+官方发布新版 SDK 时一般会同时更新 jar/aar 文件和 so 文件，您需要做的是更新这些文件到您的工程中，不要出现遗漏。您可以参考Eclipse、Android Studio 配置工程提到的添加方法进行操作。
+
+##### 确保添加的 so 库文件与平台匹配
+
+###### **何为正确的 so 文件与平台匹配？**
+
+arm与x86，这代表核心处理器（cpu）的两种架构，对不同的架构需要引用不同的 so 文件，如果引用出现错误是不能正常使用 SDK 的。
+
+解决这个问题最简单的办法是在 libs 或 jnilibs 文件夹下只保留 arm64-v8a 一个文件夹。
+
 ### 集成
 
 #### 本地依赖
 
-将Demo中app/libs目录下的affective-offline-sdk-1.1.2.aar文件和app/src/main/jniLibs目录下对应平台的so文件拷入自己的工程中
+将Demo中app/libs目录下的affective-offline-sdk-1.1.2.aar文件和app/src/main/jniLibs目录下对应平台架构的so文件拷入自己的工程中
 
 #### gradle自动依赖
 
@@ -294,7 +318,7 @@ AffectiveLogHelper.printer=object :ILogPrinter{
         }
     }
 
-### 流程图
+#### 流程图
 
 ```mermaid
 graph LR
@@ -311,4 +335,18 @@ graph LR
 关闭情感服务连接
 
 ```
+
+### 常见问题
+
+#### 运行demo 报 dlopen failed: library "libaffective.so" not found
+
+使用adb命令查询目标设备或模拟器的架构
+
+    adb shell getprop ro.product.cpu.abi
+
+在项目application类型的组件下的gradle 中的android/defaultConfig添加下面配置代码。abi指的是目标设备或模拟器的架构。
+
+    ndk {
+                abiFilters abi
+        }
 
