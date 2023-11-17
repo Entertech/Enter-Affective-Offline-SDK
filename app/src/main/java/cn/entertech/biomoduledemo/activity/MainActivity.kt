@@ -14,14 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
+import cn.entertech.affective.sdk.api.Callback
 import cn.entertech.affective.sdk.api.IAffectiveDataAnalysisService
 import cn.entertech.affective.sdk.api.IConnectionServiceListener
 import cn.entertech.affective.sdk.api.IFinishAffectiveServiceListener
 import cn.entertech.affective.sdk.api.IGetReportListener
 import cn.entertech.affective.sdk.api.IStartAffectiveServiceLister
-import cn.entertech.affective.sdk.bean.AffectiveDataCategory
 import cn.entertech.affective.sdk.bean.AffectiveServiceWay
-import cn.entertech.affective.sdk.bean.BioDataCategory
 import cn.entertech.affective.sdk.bean.EnterAffectiveConfigProxy
 import cn.entertech.affective.sdk.bean.Error
 import cn.entertech.affective.sdk.bean.RealtimeAffectiveData
@@ -32,9 +31,9 @@ import cn.entertech.biomoduledemo.fragment.MessageReceiveFragment
 import cn.entertech.biomoduledemo.fragment.MessageSendFragment
 import cn.entertech.biomoduledemo.utils.*
 import cn.entertech.ble.single.BiomoduleBleManager
-import com.orhanobut.logger.Logger
 import java.io.*
 import java.util.*
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private lateinit var biomoduleBleManager: BiomoduleBleManager
@@ -46,49 +45,51 @@ class MainActivity : AppCompatActivity() {
         IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
 //        IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveCloudService)
     }
-    companion object{
-        private const val TAG="MainActivity"
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
+
     private val connectionListener by lazy {
         {
-            val i = Log.d(TAG,"connectionListener")
+            val i = appendLog("connectionListener")
         }
     }
 
     private val disconnectionListener by lazy {
         { errorMsg: String ->
-            val i = Log.d(TAG, "disconnect:$errorMsg")
+            val i = appendLog("disconnect:$errorMsg")
         }
     }
 
     private val startAffectiveServiceLister by lazy {
         object : IStartAffectiveServiceLister {
             override fun startSuccess() {
-                Log.d(TAG, "startAffectiveServiceLister:startSuccess")
+                appendLog("startAffectiveServiceLister:startSuccess")
             }
 
             override fun startBioFail(error: Error?) {
-                Log.d(TAG, "startAffectiveServiceLister:startBioFail $error")
+                appendLog("startAffectiveServiceLister:startBioFail $error")
             }
 
             override fun startAffectionFail(error: Error?) {
-                Log.d(TAG, "startAffectiveServiceLister:startAffectionFail $error")
+                appendLog("startAffectiveServiceLister:startAffectionFail $error")
             }
 
             override fun startFail(error: Error?) {
-                Log.d(TAG, "startAffectiveServiceLister:startFail $error")
+                appendLog("startAffectiveServiceLister:startFail $error")
             }
         }
     }
 
     private val authenticationInputStream: InputStream? by lazy {
-        TODO("添加鉴权文件流")
+        resources.openRawResource(R.raw.check)
     }
 
     private val connectionServiceListener by lazy {
         object : IConnectionServiceListener {
             override fun connectionSuccess(sessionId: String?) {
-                Log.d(TAG, "connectionSuccess: $sessionId")
+                appendLog("connectionSuccess: $sessionId")
                 affectiveService?.subscribeData(bdListener, affectiveListener)
                 affectiveService?.startAffectiveService(
                     authenticationInputStream,
@@ -97,21 +98,19 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun connectionError(error: Error?) {
-                Log.d(TAG, "connectionError: $error")
+                appendLog("connectionError: $error")
             }
         }
     }
 
     private val bdListener by lazy {
         { data: RealtimeBioData? ->
-            Log.d(TAG, "bdListener: $data")
-            messageReceiveFragment.appendMessageToScreen(getString(R.string.main_realtime_biodata) + data.toString())
+            appendLog("bdListener data: $data")
         }
     }
     private val affectiveListener by lazy {
         { data: RealtimeAffectiveData? ->
-            Log.d(TAG, "affectiveListener: $data")
-            messageReceiveFragment.appendMessageToScreen(getString(R.string.main_realtime_affective_data) + data.toString())
+            appendLog("affectiveListener: $data")
         }
     }
 
@@ -130,8 +129,8 @@ class MainActivity : AppCompatActivity() {
         affectiveService?.addServiceConnectStatueListener(
             connectionListener,
             disconnectionListener
-        )?: kotlin.run {
-            Log.d(TAG,"affectiveService is null")
+        ) ?: kotlin.run {
+            appendLog("affectiveService is null")
         }
         affectiveService?.connectAffectiveServiceConnection(
             configProxy = EnterAffectiveConfigProxy(),
@@ -242,27 +241,140 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun appendLog(msg: String) {
+        Log.d(TAG, msg)
+        messageReceiveFragment.appendMessageToScreen(msg)
+    }
+
+    private fun startAffectiveService(startCollection: (IAffectiveDataAnalysisService?) -> Unit) {
+        affectiveService?.apply {
+            if(hasConnectAffectiveService()){
+                if(hasStartAffectiveService()){
+                    startCollection(this@apply)
+                    appendLog("开始采集头环数据...")
+                }else{
+                    startAffectiveService(authenticationInputStream,
+                        this@MainActivity.applicationContext,
+                        object : IStartAffectiveServiceLister {
+                            override fun startAffectionFail(error: Error?) {
+                                appendLog("Affection算法初始化失败：${error}")
+                            }
+
+                            override fun startBioFail(error: Error?) {
+                                appendLog("Bio算法初始化失败：${error}")
+                            }
+
+                            override fun startFail(error: Error?) {
+                                appendLog("算法初始化失败：${error}")
+                            }
+
+                            override fun startSuccess() {
+                                appendLog("算法初始化成功")
+                                startCollection(this@apply)
+                                appendLog("开始采集数据...")
+                            }
+                        })
+                }
+            }else{
+                connectAffectiveServiceConnection(object : IConnectionServiceListener {
+                    override fun connectionError(error: Error?) {
+                        appendLog("服务连接失败...")
+                    }
+
+                    override fun connectionSuccess(sessionId: String?) {
+                        if (hasStartAffectiveService()) {
+                            startCollection(this@apply)
+                            appendLog("开始采集头环数据...")
+                        } else {
+
+                        }
+                    }
+                }, EnterAffectiveConfigProxy())
+            }
+
+
+        }
+    }
+
+    fun onAnalysisSceegData(view: View) {
+        startAffectiveService {
+            it?.subscribeData(bdListener, affectiveListener)
+            thread {
+                var inputStream = resources.openRawResource(R.raw.sceeg1)
+                it?.apply {
+                    readFileAnalysisData(inputStream, { singleData ->
+                        appendSCEEGData(singleData)
+                        true
+                    }, { allData ->
+                        if (allData.isNotEmpty()) {
+                            appendSCEEGData(allData)
+                        }
+                    }, {
+                        it.toInt()
+                    }, object : Callback {
+                        override fun onError(error: Error?) {
+                            appendLog("解析文件失败：${error}")
+                        }
+
+                        override fun onSuccess() {
+                            it?.unSubscribeData(bdListener, affectiveListener)
+                            it?.getReport(object : IGetReportListener {
+                                override fun getAffectiveReportError(error: Error?) {
+
+                                }
+
+                                override fun getBioReportError(error: Error?) {
+                                }
+
+                                override fun onError(error: Error?) {
+                                    appendLog("生成报表数据失败：${error}")
+                                }
+
+                                override fun onSuccess(entity: UploadReportEntity?) {
+                                    appendLog("生成报表数据：")
+
+                                    entity?.data?.affective?.sleep?.apply {
+                                        //睡眠曲线
+                                        appendLog(
+                                            "睡眠曲线： $sleepCurve 入睡点: $sleepPoint " +
+                                                    "入睡用时 : $sleepLatency s 清醒时长 $awakeDuration s" +
+                                                    "浅睡时长: $lightDuration s 深睡时长 $deepDuration s"
+                                        )
+                                    }
+                                }
+                            }, true)
+                        }
+                    })
+                }
+            }
+        }
+    }
+
 
     fun onConnectDevice(@Suppress("UNUSED_PARAMETER") view: View) {
         messageReceiveFragment.appendMessageToScreen(getString(R.string.main_ble_scaning))
-        biomoduleBleManager.scanNearDeviceAndConnect(fun() {
-            messageReceiveFragment.appendMessageToScreen(getString(R.string.main_scan_success))
-            Logger.d("扫描设备成功")
-        }, fun(_: Exception) {
+        biomoduleBleManager.scanNearDeviceAndConnect(
+            fun() {
+                appendLog("扫描设备成功")
+            },
+            fun(_: Exception) {
 
-        }, fun(mac: String) {
-            messageReceiveFragment.appendMessageToScreen(getString(R.string.main_connect_to_ble_success))
-            Logger.d("连接成功$mac")
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "设备连接成功", Toast.LENGTH_SHORT).show()
-            }
-        },{msg->
-            Logger.d("连接失败")
-            messageReceiveFragment.appendMessageToScreen(getString(R.string.main_ble_connect_failed) + msg)
-            runOnUiThread {
-                Toast.makeText(this@MainActivity, "设备连接失败：$msg", Toast.LENGTH_SHORT).show()
-            }
-        },0,)
+            },
+            fun(mac: String) {
+                appendLog("连接成功$mac")
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "设备连接成功", Toast.LENGTH_SHORT).show()
+                }
+            },
+            { msg ->
+                appendLog("连接失败")
+                runOnUiThread {
+                    Toast.makeText(this@MainActivity, "设备连接失败：$msg", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            },
+            0,
+        )
     }
 
     fun onDisconnectDevice(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -293,29 +405,25 @@ class MainActivity : AppCompatActivity() {
 
     fun onStartUpload(@Suppress("UNUSED_PARAMETER") view: View) {
         biomoduleBleManager.startHeartAndBrainCollection()
-        messageReceiveFragment.appendMessageToScreen(getString(R.string.main_start_uploading))
+        appendLog(getString(R.string.main_start_uploading))
     }
 
     fun onReport(@Suppress("UNUSED_PARAMETER") view: View) {
         affectiveService?.getReport(object : IGetReportListener {
             override fun onError(error: Error?) {
-                Log.d(TAG, "getReport: onError $error")
-                messageReceiveFragment.appendMessageToScreen("getReport onError" + error.toString())
+                appendLog("getReport: onError $error")
             }
 
             override fun onSuccess(entity: UploadReportEntity?) {
-                Log.d(TAG, "getReport: onSuccess $entity")
-                messageReceiveFragment.appendMessageToScreen("getReport onSuccess" + entity.toString())
+                appendLog("getReport: onSuccess $entity")
             }
 
             override fun getBioReportError(error: Error?) {
-                Log.d(TAG, "getReport: getBioReportError $error")
-                messageReceiveFragment.appendMessageToScreen("getReport getBioReportError" + error.toString())
+                appendLog("getReport: getBioReportError $error")
             }
 
             override fun getAffectiveReportError(error: Error?) {
-                Log.d(TAG, "getReport: getAffectiveReportError $error")
-                messageReceiveFragment.appendMessageToScreen("getReport getAffectiveReportError" + error.toString())
+                appendLog("getReport: getAffectiveReportError $error")
             }
         }, false)
 
@@ -324,20 +432,20 @@ class MainActivity : AppCompatActivity() {
     fun onFinish(@Suppress("UNUSED_PARAMETER") view: View) {
         affectiveService?.finishAffectiveService(object : IFinishAffectiveServiceListener {
             override fun finishBioFail(error: Error?) {
-                Log.d(TAG, "onFinish: finishBioFail $error")
+                appendLog("onFinish: finishBioFail $error")
             }
 
             override fun finishAffectiveFail(error: Error?) {
-                Log.d(TAG, "onFinish: finishAffectiveFail $error")
+                appendLog("onFinish: finishAffectiveFail $error")
             }
 
             override fun finishError(error: Error?) {
-                Log.d(TAG, "onFinish: finishError $error")
+                appendLog("onFinish: finishError $error")
                 affectiveService?.closeAffectiveServiceConnection()
             }
 
             override fun finishSuccess() {
-                Log.d(TAG, "onFinish: finishSuccess ")
+                appendLog("onFinish: finishSuccess ")
                 affectiveService?.closeAffectiveServiceConnection()
             }
         })

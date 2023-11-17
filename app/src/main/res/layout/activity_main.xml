@@ -98,6 +98,13 @@
             android:onClick="onReport"
             android:text="@string/upload"
             android:textAllCaps="false" />
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:onClick="onAnalysisSceegData"
+            android:text="上传单通道数据"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 
