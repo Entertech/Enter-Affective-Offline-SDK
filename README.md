@@ -22,7 +22,7 @@
 
 ###### **何为正确的 so 文件？**
 
-官方发布新版 SDK 时一般会同时更新 jar/aar 文件和 so 文件，您需要做的是更新这些文件到您的工程中，不要出现遗漏。您可以参考Eclipse、Android Studio 配置工程提到的添加方法进行操作。
+官方发布新版 SDK 时一定会同时更新 jar 文件和 so 文件，您需要做的是更新这些文件到您的工程中，不要出现遗漏。您可以参考Eclipse、Android Studio 配置工程提到的添加方法进行操作。
 
 ##### 确保添加的 so 库文件与平台匹配
 
@@ -285,7 +285,7 @@ fun closeAffectiveServiceConnection()
 
 #### 辅助功能
 
-**调式日志**
+##### **调式日志**
 
 如果调试阶段需要打印日志调用如下方法：
 
@@ -317,6 +317,30 @@ AffectiveLogHelper.printer=object :ILogPrinter{
             Log.e(tag, msg)
         }
     }
+
+##### 支持单通道数据处理（Sceeg）
+
+###### 原始数据包结构
+
+| 包头             | 包长度  | 脱落检测数据             | 第一个数据    | 第二个数据    | 第三个数据    | 第四个数据    | 第五个数据    | 校验位（单字节对比校验） | 包尾             |
+| :------------- | :--- | :----------------- | :------- | :------- | :------- | :------- | :------- | :----------- | :------------- |
+| 3字节            | 1字节  | 1字节                | 3个字节     | 3个字节     | 3个字节     | 3字节      | 3个字节     | 1字节          | 3字节            |
+| 0xBB-0xBB-0xBB | 0x18 | 0x00(0为佩戴正常，非0为脱落) | 00-01-02 | 03-04-05 | 06-07-08 | 09-0A-0B | 0C-0D-0E | 0x77         | 0xEE-0xEE-0xEE |
+
+###### 解析完整的单通道数据
+
+    SingleChannelEEGUtil.process(byteInt: Int, appendDataList: (List<Int>) -> Unit)
+
+|       参数       |          类型          |                         说明                        |
+| :------------: | :------------------: | :-----------------------------------------------: |
+|     byteInt    |          Int         | Byte 转成0-255的int型，可通过CharUtil.converUnchart方法进行转换 |
+| appendDataList | (List\<Int>) -> Unit |                  处理一个有效的单通道数据的方法                  |
+
+解析并放入算法处理单通道(Sceeg)数据
+
+     SingleChannelEEGUtil.process(byteInt,{sceegData->
+                affectiveService?.appendSCEEGData(sceegData)
+    })
 
 #### 流程图
 
