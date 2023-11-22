@@ -36,7 +36,7 @@ arm与x86，这代表核心处理器（cpu）的两种架构，对不同的架�
 
 #### 本地依赖
 
-将Demo中app/libs目录下的affective-offline-sdk-1.1.3.aar文件和app/src/main/jniLibs目录下对应平台架构的so文件拷入自己的工程中
+将Demo中app/libs目录下的affective-offline-sdk-1.1.4.aar文件
 
 #### gradle自动依赖
 
@@ -50,7 +50,7 @@ repositories {
 
 在所需的module中的build.gradle文件下添加以下依赖：
 
-    implementation 'cn.entertech.android:affective-offline-sdk:1.1.3'
+    implementation 'cn.entertech.android:affective-offline-sdk:1.1.4'
 
 ### 使用
 
@@ -282,6 +282,32 @@ fun closeAffectiveServiceConnection()
          * */
         fun getAffectiveReportError(error: Error?)
     }
+
+##### 脑波数据百分化
+
+    BioDataUtils.brainwave2Rate(
+            alpha: Double,
+            beta: Double,
+            gamma: Double,
+            delta: Double,
+            theta: Double,
+            brainwaveRate: (
+                Double,
+                Double,
+                Double,
+                Double,
+                Double
+            ) -> Unit
+        )
+
+|       参数      |                                                           类型                                                          |                  说明                 |
+| :-----------: | :-------------------------------------------------------------------------------------------------------------------: | :---------------------------------: |
+|     alpha     |                                                         Double                                                        |                                     |
+|      beta     |                                                         Double                                                        |                                     |
+|     gamma     |                                                         Double                                                        |                                     |
+|     delta     |                                                         Double                                                        |                                     |
+|     theta     |                                                         Double                                                        |                                     |
+| brainwaveRate | (            Double,             Double,             Double,             Double,             Double         ) -> Unit | 返回alpha，beta，gamma，delta，theta占比，小数 |
 
 #### 流程图
 
