@@ -194,6 +194,11 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
      * */
 
     fun appendEEGData(brainData: ByteArray)
+    
+    /**
+     * 发送单个数据
+     * */
+    fun appendEEGData(brainData: Int)
 
     /**
      * 单通道数据
