@@ -6,7 +6,9 @@
 
 将硬件端采集到的脑电和心率原始数据传入情感离线算法SDK，可以计算出实时分析值和最终报表值。
 
-在开始开发前，你需要联系管理员注册好测试应用。确定好你的应用中所**需要的服务**，然后在[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)\[下载授权文件]，然后再进行开发。
+在开始开发前，你需要联系管理员注册好测试应用。确定好你的应用中所**需要的服务**
+，然后在[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)
+\[下载授权文件]，然后再进行开发。
 
 ### 注意事项
 
@@ -22,13 +24,15 @@
 
 ###### **何为正确的 so 文件？**
 
-官方发布新版 SDK 时一定会同时更新 jar 文件和 so 文件，您需要做的是更新这些文件到您的工程中，不要出现遗漏。您可以参考Eclipse、Android Studio 配置工程提到的添加方法进行操作。
+官方发布新版 SDK 时一定会同时更新 jar 文件和 so 文件，您需要做的是更新这些文件到您的工程中，不要出现遗漏。您可以参考Eclipse、Android
+Studio 配置工程提到的添加方法进行操作。
 
 ##### 确保添加的 so 库文件与平台匹配
 
 ###### **何为正确的 so 文件与平台匹配？**
 
-arm与x86，这代表核心处理器（cpu）的两种架构，对不同的架构需要引用不同的 so 文件，如果引用出现错误是不能正常使用 SDK 的。
+arm与x86，这代表核心处理器（cpu）的两种架构，对不同的架构需要引用不同的 so 文件，如果引用出现错误是不能正常使用
+SDK 的。
 
 解决这个问题最简单的办法是在 libs 或 jnilibs 文件夹下只保留 arm64-v8a 一个文件夹。
 
@@ -36,7 +40,7 @@ arm与x86，这代表核心处理器（cpu）的两种架构，对不同的架�
 
 #### 本地依赖
 
-将Demo中app/libs目录下的affective-offline-sdk-1.1.4.aar文件
+将Demo中app/libs目录下的affective-offline-sdk-1.3.4-svm-authentication.aar文件
 
 #### gradle自动依赖
 
@@ -50,7 +54,7 @@ repositories {
 
 在所需的module中的build.gradle文件下添加以下依赖：
 
-    implementation 'cn.entertech.android:affective-offline-sdk:1.1.4'
+    implementation 'cn.entertech.android:affective-offline-sdk:1.3.4-svm-authentication'
 
 ### 使用
 
@@ -58,6 +62,8 @@ repositories {
 
 ```kotlin
 IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
+或者
+EnterAffectiveLocalService():IAffectiveDataAnalysisService
 
 ```
 
@@ -86,7 +92,8 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 
 ##### **获取**
 
-用户点击[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)\[下载授权文件]按钮，服务端创建一个授权文件。其中包含用户的授权信息，例如用户ID、授权日期、授权期限、授权算法等，并对这个文件进行私钥签名。
+用户点击[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)
+\[下载授权文件]按钮，服务端创建一个授权文件。其中包含用户的授权信息，例如用户ID、授权日期、授权期限、授权算法等，并对这个文件进行私钥签名。
 
 ##### **使用**
 
@@ -116,27 +123,44 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 
 )
 
-    interface IStartAffectiveServiceLister {
-        /**
-         * 启动成功
-         * */
-        fun startSuccess()
+```
+interface IStartAffectiveServiceLister {
+    /**
+     * 启动成功
+     * */
+    fun startSuccess(){
 
-        /**
-         * 启动生物基础服务失败
-         * */
-        fun startBioFail(error: Error?)
-
-        /**
-         * 启动生理基础服务失败
-         * */
-        fun startAffectionFail(error: Error?)
-
-        /**
-         * 启动失败
-         * */
-        fun startFail(error: Error?)
     }
+
+    /**
+     * 启动生物基础服务失败
+     * */
+    fun startBioFail(error: Error?){
+
+    }
+
+    /**
+     * 启动生理基础服务失败
+     * */
+    fun startAffectionFail(error: Error?){
+
+    }
+
+    /**
+     * 启动失败
+     * */
+    fun startFail(error: Error?){
+
+    }
+
+    /**
+     * 已经启动
+     * */
+    fun hasStarted(){
+
+    }
+}
+```
 
 #### 订阅数据回调
 
@@ -169,6 +193,8 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 #### 结束离线计算服务
 
        IAffectiveDataAnalysisService.finishAffectiveService(listener: IFinishAffectiveServiceListener)
+       
+       IAffectiveDataAnalysisService.suspendFinishAffectiveService()
 
 #### 分析本地文件数据
 
@@ -190,20 +216,21 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 
 ```
 	/**
-     * 发送数据
+     * 发送EEG数据 isEar是否为耳道数据
      * */
 
-    fun appendEEGData(brainData: ByteArray)
+    fun appendEEGData(brainData: ByteArray, isEar: Boolean = false)
+    fun appendEEGData(brainData: Int, isEar: Boolean = false)
+    fun appendEEGData(brainData: List<Int>, isEar: Boolean = false)
     
-    /**
-     * 发送单个数据
-     * */
-    fun appendEEGData(brainData: Int)
+
 
     /**
-     * 单通道数据
+     * 单通道数据 isEar是否为耳道数据
      * */
-    fun appendSCEEGData(brainData: ByteArray)
+    fun appendSCEEGData(brainData: ByteArray, isEar: Boolean = false)
+    fun appendSCEEGData(brainData: Int, isEar: Boolean = false)
+    fun appendSCEEGData(brainData: List<Int>, isEar: Boolean = false)
 
     /**
      * 添加心率数据
@@ -212,7 +239,7 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 
 
     /**
-     * 坐垫数据
+     * PEPR数据
      * */
     fun appendPEPRData(peprData: ByteArray)
 
@@ -244,7 +271,7 @@ IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalServi
 #### 关闭离线计算服务连接
 
 ```kotlin
-    /**
+/**
  * 断开
  * */
 fun closeAffectiveServiceConnection()
@@ -252,7 +279,8 @@ fun closeAffectiveServiceConnection()
 
 #### 获取报表
 
-相应返回的 report 字段，具体字段的详细描述见[报表数据字段详情](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E6%8A%A5%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md)。
+相应返回的 report
+字段，具体字段的详细描述见[报表数据字段详情](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E6%8A%A5%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md)。
 
     /**
      * 获取报表
@@ -288,6 +316,12 @@ fun closeAffectiveServiceConnection()
         fun getAffectiveReportError(error: Error?)
     }
 
+支持挂起函数
+
+```
+   suspend fun suspendGetReport(needFinishService: Boolean): UploadReportEntity?
+```
+
 ##### 脑波数据百分化
 
     BioDataUtils.brainwave2Rate(
@@ -305,13 +339,13 @@ fun closeAffectiveServiceConnection()
             ) -> Unit
         )
 
-|       参数      |                                                           类型                                                          |                  说明                 |
-| :-----------: | :-------------------------------------------------------------------------------------------------------------------: | :---------------------------------: |
-|     alpha     |                                                         Double                                                        |                                     |
-|      beta     |                                                         Double                                                        |                                     |
-|     gamma     |                                                         Double                                                        |                                     |
-|     delta     |                                                         Double                                                        |                                     |
-|     theta     |                                                         Double                                                        |                                     |
+|      参数       |                                                          类型                                                           |                 说明                  |
+|:-------------:|:---------------------------------------------------------------------------------------------------------------------:|:-----------------------------------:|
+|     alpha     |                                                        Double                                                         |                                     |
+|     beta      |                                                        Double                                                         |                                     |
+|     gamma     |                                                        Double                                                         |                                     |
+|     delta     |                                                        Double                                                         |                                     |
+|     theta     |                                                        Double                                                         |                                     |
 | brainwaveRate | (            Double,             Double,             Double,             Double,             Double         ) -> Unit | 返回alpha，beta，gamma，delta，theta占比，小数 |
 
 #### 流程图
@@ -339,7 +373,7 @@ graph LR
 如果调试阶段需要打印日志调用如下方法：
 
 ```kotlin
-AffectiveLogHelper.printer=object :ILogPrinter{
+AffectiveLogHelper.printer = object : ILogPrinter {
     override fun d(tag: String, msg: String) {
     }
 
@@ -372,7 +406,7 @@ AffectiveLogHelper.printer=object :ILogPrinter{
 ###### 原始数据包结构
 
 | 包头             | 包长度  | 脱落检测数据             | 第一个数据    | 第二个数据    | 第三个数据    | 第四个数据    | 第五个数据    | 校验位（单字节对比校验） | 包尾             |
-| :------------- | :--- | :----------------- | :------- | :------- | :------- | :------- | :------- | :----------- | :------------- |
+|:---------------|:-----|:-------------------|:---------|:---------|:---------|:---------|:---------|:-------------|:---------------|
 | 3字节            | 1字节  | 1字节                | 3个字节     | 3个字节     | 3个字节     | 3字节      | 3个字节     | 1字节          | 3字节            |
 | 0xBB-0xBB-0xBB | 0x18 | 0x00(0为佩戴正常，非0为脱落) | 00-01-02 | 03-04-05 | 06-07-08 | 09-0A-0B | 0C-0D-0E | 0x77         | 0xEE-0xEE-0xEE |
 
@@ -380,9 +414,9 @@ AffectiveLogHelper.printer=object :ILogPrinter{
 
     SingleChannelEEGUtil.process(byteInt: Int, appendDataList: (List<Int>) -> Unit)
 
-|       参数       |          类型          |                         说明                        |
-| :------------: | :------------------: | :-----------------------------------------------: |
-|     byteInt    |          Int         | Byte 转成0-255的int型，可通过CharUtil.converUnchart方法进行转换 |
+|       参数       |          类型          |                        说明                         |
+|:--------------:|:--------------------:|:-------------------------------------------------:|
+|    byteInt     |         Int          | Byte 转成0-255的int型，可通过CharUtil.converUnchart方法进行转换 |
 | appendDataList | (List\<Int>) -> Unit |                  处理一个有效的单通道数据的方法                  |
 
 ###### 解析并放入算法处理单通道(Sceeg)数据
