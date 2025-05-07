@@ -26,6 +26,7 @@ import cn.entertech.affective.sdk.bean.Error
 import cn.entertech.affective.sdk.bean.RealtimeAffectiveData
 import cn.entertech.affective.sdk.bean.RealtimeBioData
 import cn.entertech.affective.sdk.bean.UploadReportEntity
+import cn.entertech.affectivesdk.manager.EnterAffectiveLocalService
 import cn.entertech.biomoduledemo.R
 import cn.entertech.biomoduledemo.fragment.MessageReceiveFragment
 import cn.entertech.biomoduledemo.fragment.MessageSendFragment
@@ -43,7 +44,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pagerSlidingTabStrip: PagerSlidingTabStrip
     private val affectiveService by lazy {
         IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
+//        EnterAffectiveLocalService()
 //        IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveCloudService)
+
     }
 
     companion object {
@@ -300,7 +303,7 @@ class MainActivity : AppCompatActivity() {
         startAffectiveService {
             it?.subscribeData(bdListener, affectiveListener)
             thread {
-                var inputStream = resources.openRawResource(R.raw.sceeg1)
+                var inputStream = resources.openRawResource(R.raw.sceeg)
                 it?.apply {
                     readFileAnalysisData(inputStream, { singleData ->
                         appendSCEEGData(singleData)
