@@ -5,12 +5,12 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'cn.entertech.biomoduledemo'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "cn.entertech.biomoduledemo"
-        minSdkVersion 23
-        targetSdkVersion 32
+        minSdkVersion 24
+        targetSdkVersion 34
         versionCode 9
         versionName "1.8.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
