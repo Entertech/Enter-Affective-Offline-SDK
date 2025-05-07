@@ -40,7 +40,7 @@ SDK 的。
 
 #### 本地依赖
 
-将Demo中app/libs目录下的affective-offline-sdk-1.3.4-svm-authentication.aar文件
+将Demo中app/libs目录下的1.3.4-svm-authentication.aar文件
 
 #### gradle自动依赖
 
@@ -54,7 +54,7 @@ repositories {
 
 在所需的module中的build.gradle文件下添加以下依赖：
 
-    implementation 'cn.entertech.android:affective-offline-sdk:1.3.4-svm-authentication'
+    implementation ("cn.entertech.android:affective-offline-sdk-auth:1.3.4-svm-authentication")
 
 ### 使用
 
@@ -123,6 +123,7 @@ EnterAffectiveLocalService():IAffectiveDataAnalysisService
 
 )
 
+
 ```
 interface IStartAffectiveServiceLister {
     /**
@@ -161,6 +162,7 @@ interface IStartAffectiveServiceLister {
     }
 }
 ```
+
 
 #### 订阅数据回调
 
@@ -246,6 +248,7 @@ interface IStartAffectiveServiceLister {
 
 ```
 
+
 #### 添加服务连接状态监听
 
     fun addServiceConnectStatueListener(
@@ -321,6 +324,8 @@ fun closeAffectiveServiceConnection()
 ```
    suspend fun suspendGetReport(needFinishService: Boolean): UploadReportEntity?
 ```
+
+
 
 ##### 脑波数据百分化
 
