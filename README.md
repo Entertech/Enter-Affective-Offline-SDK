@@ -42,19 +42,7 @@ SDK 的。
 
 将Demo中app/libs目录下的1.3.4-svm-authentication.aar文件
 
-#### gradle自动依赖
 
-在项目根目录的build.gradle文件下添加以下依赖：
-
-```groovy
-repositories {
-    mavenCentral()
-}
-```
-
-在所需的module中的build.gradle文件下添加以下依赖：
-
-    implementation ("cn.entertech.android:affective-offline-sdk-auth:1.3.4-svm-authentication")
 
 ### 使用
 
