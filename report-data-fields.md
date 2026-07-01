@@ -1,40 +1,42 @@
-# UploadReportEntity:
+# UploadReportEntity
 
-|  属性  |   类型  |       说明      |
-| :--: | :---: | :-----------: |
-| data | Data? | 生物基础数据&生理基础数据 |
+Language: English | [简体中文](report-data-fields.zh-CN.md)
+
+| Property | Type | Description |
+| :--: | :--: | :--: |
+| data | Data? | Bio basic data and affective basic data |
 
 ## Data
 
-|     参数    |     类型    |   说明   |
-| :-------: | :-------: | :----: |
-| affective | Affective | 生理基础数据 |
-|  biodata  |  Biodata  | 生物基础数据 |
+| Parameter | Type | Description |
+| :--: | :--: | :--: |
+| affective | Affective | Affective basic data |
+| biodata | Biodata | Bio basic data |
 
 ### Affective
 
-|     属性     |     类型     |       说明      |
-| :--------: | :--------: | :-----------: |
-|   arousal  |   Arousal  |  |
-|  attention |  Attention |               |
-|  coherence |  Coherence |               |
-|  pleasure  |  Pleasure  |               |
-|  pressure  |  Pressure  |               |
-| relaxation | Relaxation |               |
-| meditation | Meditation |               |
-|    sleep   |    Sleep   |               |
+| Property | Type | Description |
+| :--: | :--: | :--: |
+| arousal | Arousal | Arousal report |
+| attention | Attention | Attention report |
+| coherence | Coherence | Coherence report |
+| pleasure | Pleasure | Pleasure report |
+| pressure | Pressure | Pressure report |
+| relaxation | Relaxation | Relaxation report |
+| meditation | Meditation | Meditation report |
+| sleep | Sleep | Sleep report |
 
 #### Arousal
 
 ```kotlin
 data class Arousal(
         /**
-         * 全程激活度有效值（除去无效值0）的均值
-         * */
+         * Average valid arousal value for the full session, excluding invalid 0 values.
+         */
         val arousal_avg: Int,
         /**
-         * 全程激活度记录
-         * */
+         * Full-session arousal record.
+         */
         val arousal_rec: Any
 )
 ```
@@ -44,13 +46,13 @@ data class Arousal(
 ```kotlin
 data class Attention(
     /**
-     * 全程注意力有效值（除去无效值0）的均值
-     * */
+     * Average valid attention value for the full session, excluding invalid 0 values.
+     */
     @SerializedName("attention_avg")
     val attentionAvg: Double,
     /**
-     * 全程注意力记录
-     * */
+     * Full-session attention record.
+     */
     @SerializedName("attention_rec")
     val attentionRec: List<Double>
 )
@@ -61,8 +63,8 @@ data class Attention(
 ```kotlin
 data class Coherence(
     /**
-     * 全程和谐度有效值（除去无效值0）的均值
-     * */
+     * Average valid coherence value for the full session, excluding invalid 0 values.
+     */
     @SerializedName("coherence_avg")
     val coherenceAvg: Double,
     @SerializedName("coherence_duration")
@@ -70,8 +72,8 @@ data class Coherence(
     @SerializedName("coherence_flag")
     val coherenceFlag: List<Int>?,
     /**
-     * 全程和谐度记录
-     * */
+     * Full-session coherence record.
+     */
     @SerializedName("coherence_rec")
     val coherenceRec: List<Double>
 )
@@ -82,13 +84,13 @@ data class Coherence(
 ```kotlin
 data class Pleasure(
         /**
-         * 全程愉悦度有效值（除去无效值0）的均值
-         * */
+         * Average valid pleasure value for the full session, excluding invalid 0 values.
+         */
 
         val pleasureAvg: Double,
         /**
-         * 全程压力水平记录
-         * */
+         * Full-session pleasure record.
+         */
 
         val pleasureRec: List<Double>
 )
@@ -108,16 +110,15 @@ data class Pressure(
 #### Relaxation
 
 ```kotlin
-
 data class Relaxation(
         /**
-         * 全程放松度有效值（除去无效值0）的均值
-         * */
+         * Average valid relaxation value for the full session, excluding invalid 0 values.
+         */
 
         val relaxationAvg: Double,
         /**
-         * 全程放松度记录
-         * */
+         * Full-session relaxation record.
+         */
 
         val relaxationRec: List<Double>
 )
@@ -155,43 +156,45 @@ data class Meditation(
 ```kotlin
 data class Sleep(
     /**
-     * 睡眠曲线，反映整个体验过程的睡眠情况。睡眠曲线的值越高表明越接近清醒，曲线值越低表明越接近深睡。
-     * */
+     * Sleep curve for the full experience.
+     * A higher curve value indicates a state closer to wakefulness; a lower curve value indicates a state closer to deep sleep.
+     */
     val sleepCurve: ArrayList<Double> = ArrayList(),
     /**
-     * 入睡点时间索引,即入睡时刻在睡眠曲线上的时间轴坐标。数值范围[0, +∞),0表示无效值
-     * */
+     * Sleep-onset time index, which is the time-axis coordinate of the sleep onset point on the sleep curve.
+     * Value range: [0, +infinity). 0 indicates an invalid value.
+     */
     val sleepPoint: Int = 0,
     /**
-     * 入睡用时，单位：秒
-     * */
+     * Sleep latency. Unit: seconds.
+     */
     val sleepLatency: Int = 0,
     /**
-     * 清醒时长，单位：秒
-     * */
+     * Awake duration. Unit: seconds.
+     */
     val awakeDuration: Int = 0,
     /**
-     * 浅睡时长，单位：秒
-     * */
+     * Light sleep duration. Unit: seconds.
+     */
     val lightDuration: Int = 0,
     /**
-     * 深睡时长，单位：秒
-     * */
+     * Deep sleep duration. Unit: seconds.
+     */
     val deepDuration: Int = 0,
     /**
-     * 快速眼动时长
+     * REM duration.
      */
     var remDuration: Int = 0,
     /**
-     * 运动次数
+     * Movement count.
      */
     var movementCount: Int = 0,
     /**
-     * 惊醒次数
+     * Arousal count.
      */
     var arousalCount: Int = 0,
     /**
-     * 容差
+     * Disturbance tolerance.
      */
     var disturbTolerance: Double = 0.0,
 
@@ -217,17 +220,16 @@ data class Sleep(
 
     val sleepArousalRec: List<Int> = ArrayList()
 )
-
 ```
 
 ### Biodata
 
-|  属性  |   类型  |       说明      |
-| :--: | :---: | :-----------: |
-| data | Sceeg | 生物基础数据&生理基础数据 |
-|  eeg |  Eeg  |               |
-|  hr  |  HrV2 |               |
-| pepr | PEPR? |               |
+| Property | Type | Description |
+| :--: | :--: | :--: |
+| data | Sceeg | Single-channel EEG data |
+| eeg | Eeg | EEG data |
+| hr | HrV2 | Heart rate and HRV data |
+| pepr | PEPR? | PEPR data |
 
 #### Sceeg
 
@@ -282,16 +284,15 @@ data class HrV2(
 
 #### PEPR
 
-|       属性      |       类型      |  说明 |
-| :-----------: | :-----------: | :-: |
-|     hrAvg     |      Int      |     |
-|     hrMax     |      Int      |     |
-|     hrMin     |      Int      |     |
-|     hrRec     |   List\<Int>  |     |
-|     hrvAvg    |     Double    |     |
-|     hrvRec    | List\<Double> |     |
-|     rrAvg     |     Double    |     |
-|     rrRec     | List\<Double> |     |
-| bcgQualityRec |   List\<Int>  |     |
-|  rwQualityRec |   List\<Int>  |     |
-
+| Property | Type | Description |
+| :--: | :--: | :--: |
+| hrAvg | Int | Average heart rate |
+| hrMax | Int | Maximum heart rate |
+| hrMin | Int | Minimum heart rate |
+| hrRec | List\<Int> | Heart rate record |
+| hrvAvg | Double | Average heart rate variability |
+| hrvRec | List\<Double> | Heart rate variability record |
+| rrAvg | Double | Average respiration rate |
+| rrRec | List\<Double> | Respiration rate record |
+| bcgQualityRec | List\<Int> | Pulse wave quality record |
+| rwQualityRec | List\<Int> | Respiration wave quality record |

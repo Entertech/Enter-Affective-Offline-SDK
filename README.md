@@ -153,7 +153,7 @@ interface IStartAffectiveServiceLister {
 
 #### Subscribe to Data Callbacks
 
-For realtime data field descriptions, see [Realtime Bio Basic Data Fields](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%89%A9%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md) and [Realtime Affective Basic Data Fields](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%90%86%E7%8A%B6%E6%80%81%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md).
+For realtime data field descriptions, see [Realtime Bio Basic Data Fields](realtime-bio-data-fields.md) and [Realtime Affective Basic Data Fields](realtime-affective-data-fields.md).
 
 ```kotlin
 IAffectiveDataAnalysisService.subscribeData(
@@ -283,7 +283,7 @@ fun closeAffectiveServiceConnection()
 
 #### Get a Report
 
-For details about the returned `report` fields, see [Report Data Fields](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E6%8A%A5%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md).
+For details about the returned `report` fields, see [Report Data Fields](report-data-fields.md).
 
 ```kotlin
 /**

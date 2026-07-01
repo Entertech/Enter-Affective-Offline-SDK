@@ -156,7 +156,7 @@ interface IStartAffectiveServiceLister {
 
 #### 订阅数据回调
 
-实时数据字段说明详见：[基础数据字段说明](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%89%A9%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md),[情感数据字段说明](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%90%86%E7%8A%B6%E6%80%81%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md)
+实时数据字段说明详见：[基础数据字段说明](realtime-bio-data-fields.zh-CN.md),[情感数据字段说明](realtime-affective-data-fields.zh-CN.md)
 
     IAffectiveDataAnalysisService.subscribeData(
             //生物基础数据
@@ -272,7 +272,7 @@ fun closeAffectiveServiceConnection()
 #### 获取报表
 
 相应返回的 report
-字段，具体字段的详细描述见[报表数据字段详情](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E6%8A%A5%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md)。
+字段，具体字段的详细描述见[报表数据字段详情](report-data-fields.zh-CN.md)。
 
     /**
      * 获取报表

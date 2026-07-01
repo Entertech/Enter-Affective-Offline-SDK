@@ -1,5 +1,7 @@
 # RealtimeAffectiveData
 
+语言： [English](realtime-affective-data-fields.md) | 简体中文
+
 |           属性           |            类型           |    说明    |
 | :--------------------: | :---------------------: | :------: |
 |  realtimeAttentionData |  RealtimeAttentionData? |  实时注意力数据 |

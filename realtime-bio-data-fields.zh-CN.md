@@ -1,5 +1,7 @@
 # RealtimeBioData
 
+语言： [English](realtime-bio-data-fields.md) | 简体中文
+
 |         属性        |         类型         |  说明 |
 | :---------------: | :----------------: | :-: |
 |  realtimeEEGData  |  RealtimeEEGData?  |     |
@@ -22,7 +24,7 @@ class RealtimeEEGData {
     var rightwave: ArrayList<Double>? = null
 
     //5种脑电波节律的能量分贝值：α波、β波、θ波、δ波、γ波
-    // 5种脑电波节律各一个数值，数值范围[0, +∞)，初始阶段与信号质量不佳时返回为0
+    //5种脑电波节律各一个数值，数值范围[0, +∞)，初始阶段与信号质量不佳时返回为0
 
     var alphaPower: Double? = null
     var betaPower: Double? = null
@@ -106,4 +108,3 @@ class RealtimePEPRData {
     var rr:Double? = null
 }
 ```
-
