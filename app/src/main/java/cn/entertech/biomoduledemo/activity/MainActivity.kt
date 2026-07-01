@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var messageSendFragment: MessageSendFragment
     private lateinit var vpContainer: ViewPager
     private lateinit var pagerSlidingTabStrip: PagerSlidingTabStrip
+    private lateinit var btnInit: Button
     private val affectiveService by lazy {
         IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
 //        EnterAffectiveLocalService()
@@ -145,6 +147,7 @@ class MainActivity : AppCompatActivity() {
     private fun initView() {
         vpContainer = findViewById(R.id.vp_contain)
         pagerSlidingTabStrip = findViewById(R.id.message_tabs)
+        btnInit = findViewById(R.id.btnInit)
         val listFragment = mutableListOf<Fragment>()
         messageReceiveFragment = MessageReceiveFragment()
         messageSendFragment = MessageSendFragment()
@@ -158,6 +161,9 @@ class MainActivity : AppCompatActivity() {
         )
         vpContainer.adapter = adapter
         pagerSlidingTabStrip.setViewPager(vpContainer)
+        btnInit.setOnClickListener {
+            initEnterAffectiveCloudManager()
+        }
     }
 
     class MessageAdapter(
@@ -400,10 +406,6 @@ class MainActivity : AppCompatActivity() {
 
     private var heartRateListener = fun(heartRate: Int) {
         affectiveService?.appendHeartRateData(heartRate)
-    }
-
-    fun onInit(@Suppress("UNUSED_PARAMETER") view: View) {
-        initEnterAffectiveCloudManager()
     }
 
     fun onStartUpload(@Suppress("UNUSED_PARAMETER") view: View) {
