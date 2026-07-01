@@ -37,7 +37,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     def affectiveVersion = "1.3.4-svm-authentication"
     implementation "cn.entertech.android:affective_sdk_authentication_api:$affectiveVersion"
-    implementation files('libs/1.3.4-svm-authentication.aar')
+    implementation "cn.entertech.android:affective-offline-sdk-authentication:$affectiveVersion"
+//    implementation files('libs/1.3.4-svm-authentication.aar')
     implementation("org.bouncycastle:bcprov-jdk18on:1.76")
     implementation("org.bouncycastle:bcpkix-jdk18on:1.76")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10"
