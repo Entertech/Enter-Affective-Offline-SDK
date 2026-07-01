@@ -38,9 +38,17 @@ The simplest way to avoid this issue is to keep only the `arm64-v8a` directory u
 
 ### Integration
 
-#### Local Dependency
+```groovy
+dependencies {
+    def affectiveVersion = "1.3.4-svm-authentication"
+    implementation "cn.entertech.android:affective_sdk_authentication_api:$affectiveVersion"
+    implementation "cn.entertech.android:affective-offline-sdk-authentication:$affectiveVersion"
+    implementation("org.bouncycastle:bcprov-jdk18on:1.76")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.76")
+}
+```
 
-Use the `1.3.4-svm-authentication.aar` file under the demo `app/libs` directory.
+The API dependency provides the public interfaces and data classes. The local AAR provides the offline SDK implementation and native libraries. After adding the dependencies, sync the Gradle project.
 
 ### Usage
 

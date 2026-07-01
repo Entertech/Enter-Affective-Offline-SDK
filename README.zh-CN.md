@@ -40,11 +40,17 @@ SDK 的。
 
 ### 集成
 
-#### 本地依赖
+```groovy
+dependencies {
+    def affectiveVersion = "1.3.4-svm-authentication"
+    implementation "cn.entertech.android:affective_sdk_authentication_api:$affectiveVersion"
+    implementation "cn.entertech.android:affective-offline-sdk-authentication:$affectiveVersion"
+    implementation("org.bouncycastle:bcprov-jdk18on:1.76")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.76")
+}
+```
 
-将Demo中app/libs目录下的1.3.4-svm-authentication.aar文件
-
-
+API 依赖提供公共接口和数据类，本地 AAR 提供离线 SDK 实现和 native 库。添加后同步 Gradle 工程即可。
 
 ### 使用
 
