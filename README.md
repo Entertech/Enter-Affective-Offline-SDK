@@ -1,369 +1,379 @@
-# 回车情感离线算法SDK说明文档
+# Enter Affective Offline Algorithm SDK
 
-## 情感离线算法SDK
+Language: English | [简体中文](README.zh-CN.md)
 
-### 说明
+## Affective Offline Algorithm SDK
 
-将硬件端采集到的脑电和心率原始数据传入情感离线算法SDK，可以计算出实时分析值和最终报表值。
+### Overview
 
-在开始开发前，你需要联系管理员注册好测试应用。确定好你的应用中所**需要的服务**
-，然后在[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)
-\[下载授权文件]，然后再进行开发。
+Pass raw EEG and heart rate data collected from the hardware device to the Affective Offline Algorithm SDK to calculate realtime analysis values and final report values.
 
-### 注意事项
+Before development, contact the administrator to register a test application. Confirm the **services** required by your application, then download the authorization file from the [admin console](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager) and start development.
 
-#### 代码混淆
+### Notes
 
-    -keep class cn.entertech.affectivesdk.authentication.bean.** { *; }
+#### Code Obfuscation
 
-#### so 文件说明
+```proguard
+-keep class cn.entertech.affectivesdk.authentication.bean.** { *; }
+```
 
-算法核心功能实现依赖 so 库。在使用 SDK ，以及向工程中添加 so 时请注意以下几点：
+#### Shared Object Files
 
-##### 确保添加了正确的 so 库文件
+The core algorithm depends on `.so` libraries. Pay attention to the following points when using the SDK and adding `.so` files to your project.
 
-###### **何为正确的 so 文件？**
+##### Add the Correct `.so` Files
 
-官方发布新版 SDK 时一定会同时更新 jar 文件和 so 文件，您需要做的是更新这些文件到您的工程中，不要出现遗漏。您可以参考Eclipse、Android
-Studio 配置工程提到的添加方法进行操作。
+###### What are the correct `.so` files?
 
-##### 确保添加的 so 库文件与平台匹配
+When an official SDK version is released, the `jar` file and `.so` files are always updated together. Update all of these files in your project and make sure none are missing. You can refer to the setup methods for Eclipse or Android Studio projects.
 
-###### **何为正确的 so 文件与平台匹配？**
+##### Match `.so` Files to the Platform
 
-arm与x86，这代表核心处理器（cpu）的两种架构，对不同的架构需要引用不同的 so 文件，如果引用出现错误是不能正常使用
-SDK 的。
+###### What does platform matching mean?
 
-解决这个问题最简单的办法是在 libs 或 jnilibs 文件夹下只保留 arm64-v8a 一个文件夹。
+`arm` and `x86` represent two CPU architectures. Different architectures require different `.so` files. If the wrong files are referenced, the SDK cannot work correctly.
 
-### 集成
+The simplest way to avoid this issue is to keep only the `arm64-v8a` directory under `libs` or `jniLibs`.
 
-#### 本地依赖
+### Integration
 
-将Demo中app/libs目录下的1.3.4-svm-authentication.aar文件
+#### Local Dependency
 
+Use the `1.3.4-svm-authentication.aar` file under the demo `app/libs` directory.
 
+### Usage
 
-### 使用
-
-#### 获取离线计算服务
+#### Get the Offline Computing Service
 
 ```kotlin
 IAffectiveDataAnalysisService.getService(AffectiveServiceWay.AffectiveLocalService)
-或者
-EnterAffectiveLocalService():IAffectiveDataAnalysisService
-
+// or
+EnterAffectiveLocalService(): IAffectiveDataAnalysisService
 ```
 
-#### 连接离线计算服务
+#### Connect to the Offline Computing Service
 
-     IAffectiveDataAnalysisService.connectAffectiveServiceConnection(
-    			IConnectionServiceListener,
-    			//以默认值就行
-                EnterAffectiveConfigProxy
-            )
-
-    interface IConnectionServiceListener {
-        /**
-         * 连接成功 
-         * @param sessionId sessionId
-         * */
-        fun connectionSuccess(sessionId:String?)
-
-        /**
-         * 连接失败
-         * */
-        fun connectionError(error: Error?)
-    }
-
-#### **授权文件获取与使用**
-
-##### **获取**
-
-用户点击[管理后台](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager)
-\[下载授权文件]按钮，服务端创建一个授权文件。其中包含用户的授权信息，例如用户ID、授权日期、授权期限、授权算法等，并对这个文件进行私钥签名。
-
-##### **使用**
-
-###### 若授权文件放在工程res/raw文件夹
-
-    private val authenticationInputStream: InputStream? by lazy {
-            resources.openRawResource(R.raw.check)
-        }
-
-###### 若授权文件放在工程res/assets文件夹
-
-     private val authenticationInputStream: InputStream? by lazy {
-            resources.assets.open(fileName)
-        }
-
-###### 若授权文件放在工程其他目录下
-
-     private val authenticationInputStream: InputStream? by lazy {
-            FileInputStream(File)
-        } 
-
-#### 启动离线计算服务
-
-    IAffectiveDataAnalysisService.startAffectiveService(
-                        authenticationInputStream,
-                        Context, IStartAffectiveServiceLister
-
+```kotlin
+IAffectiveDataAnalysisService.connectAffectiveServiceConnection(
+    IConnectionServiceListener,
+    // Use the default value.
+    EnterAffectiveConfigProxy
 )
 
+interface IConnectionServiceListener {
+    /**
+     * Connection succeeded.
+     * @param sessionId session ID
+     */
+    fun connectionSuccess(sessionId: String?)
 
+    /**
+     * Connection failed.
+     */
+    fun connectionError(error: Error?)
+}
 ```
+
+#### Authorization File
+
+##### Get the Authorization File
+
+Click **Download authorization file** in the [admin console](https://admin.affectivecloud.cn/#/offline_applications/offline_app_manager). The server creates an authorization file that contains authorization information such as user ID, authorization date, authorization period, and authorized algorithms, then signs the file with a private key.
+
+##### Use the Authorization File
+
+###### If the authorization file is in the project `res/raw` directory
+
+```kotlin
+private val authenticationInputStream: InputStream? by lazy {
+    resources.openRawResource(R.raw.check)
+}
+```
+
+###### If the authorization file is in the project `res/assets` directory
+
+```kotlin
+private val authenticationInputStream: InputStream? by lazy {
+    resources.assets.open(fileName)
+}
+```
+
+###### If the authorization file is in another project directory
+
+```kotlin
+private val authenticationInputStream: InputStream? by lazy {
+    FileInputStream(File)
+}
+```
+
+#### Start the Offline Computing Service
+
+```kotlin
+IAffectiveDataAnalysisService.startAffectiveService(
+    authenticationInputStream,
+    Context,
+    IStartAffectiveServiceLister
+)
+```
+
+```kotlin
 interface IStartAffectiveServiceLister {
     /**
-     * 启动成功
-     * */
-    fun startSuccess(){
-
+     * Started successfully.
+     */
+    fun startSuccess() {
     }
 
     /**
-     * 启动生物基础服务失败
-     * */
-    fun startBioFail(error: Error?){
-
+     * Failed to start the bio basic service.
+     */
+    fun startBioFail(error: Error?) {
     }
 
     /**
-     * 启动生理基础服务失败
-     * */
-    fun startAffectionFail(error: Error?){
-
+     * Failed to start the affective basic service.
+     */
+    fun startAffectionFail(error: Error?) {
     }
 
     /**
-     * 启动失败
-     * */
-    fun startFail(error: Error?){
-
+     * Failed to start.
+     */
+    fun startFail(error: Error?) {
     }
 
     /**
-     * 已经启动
-     * */
-    fun hasStarted(){
-
+     * Already started.
+     */
+    fun hasStarted() {
     }
 }
 ```
 
+#### Subscribe to Data Callbacks
 
-#### 订阅数据回调
+For realtime data field descriptions, see [Realtime Bio Basic Data Fields](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%89%A9%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md) and [Realtime Affective Basic Data Fields](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%90%86%E7%8A%B6%E6%80%81%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md).
 
-实时数据字段说明详见：[基础数据字段说明](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%89%A9%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md),[情感数据字段说明](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E5%AE%9E%E6%97%B6%E7%94%9F%E7%90%86%E7%8A%B6%E6%80%81%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md)
-
-    IAffectiveDataAnalysisService.subscribeData(
-    		//生物基础数据
-            bdListener: ((RealtimeBioData?) -> Unit)? = null,
-    		//生理数据
-            listener: ((RealtimeAffectiveData?) -> Unit)? = null
-        )
-
-#### 取消订阅数据回调
-
-     /**
-         * 取消订阅
-         * */
-        IAffectiveDataAnalysisService.unSubscribeData(
-            bdListener: ((RealtimeBioData?) -> Unit)? = null,
-            listener: ((RealtimeAffectiveData?) -> Unit)? = null
-        )
-
-#### 重启离线计算服务
-
-      /**
-         * 重启离线计算服务
-         * */
-        IAffectiveDataAnalysisService.restoreAffectiveService(listener: IStartAffectiveServiceLister)
-
-#### 结束离线计算服务
-
-       IAffectiveDataAnalysisService.finishAffectiveService(listener: IFinishAffectiveServiceListener)
-       
-       IAffectiveDataAnalysisService.suspendFinishAffectiveService()
-
-#### 分析本地文件数据
-
-       /**
-         * @param inputStream 待分析的数据流
-         * @param callback 结果回调
-         * @param appSingleData 处理单个数据，若返回true，则表示消耗该数据，不添加到all数据里面
-         * @param case 数据流读取出来的字符串转成需要的类型R
-         * @param appendAllData 处理所有未被消耗的数据
-         * */
-        fun <R> readFileAnalysisData(inputStream: InputStream,
-                                     appSingleData: ((R) -> Boolean)? = null,
-                                     appendAllData: (List<R>) -> Unit,
-                                     case: (String) -> R,
-                                     callback: Callback,
-        )
-
-#### 处理数据
-
-```
-	/**
-     * 发送EEG数据 isEar是否为耳道数据
-     * */
-
-    fun appendEEGData(brainData: ByteArray, isEar: Boolean = false)
-    fun appendEEGData(brainData: Int, isEar: Boolean = false)
-    fun appendEEGData(brainData: List<Int>, isEar: Boolean = false)
-    
-
-
-    /**
-     * 单通道数据 isEar是否为耳道数据
-     * */
-    fun appendSCEEGData(brainData: ByteArray, isEar: Boolean = false)
-    fun appendSCEEGData(brainData: Int, isEar: Boolean = false)
-    fun appendSCEEGData(brainData: List<Int>, isEar: Boolean = false)
-
-    /**
-     * 添加心率数据
-     * */
-    fun appendHeartRateData(heartRateData: Int)
-
-
-    /**
-     * PEPR数据
-     * */
-    fun appendPEPRData(peprData: ByteArray)
-
-
+```kotlin
+IAffectiveDataAnalysisService.subscribeData(
+    // Bio basic data.
+    bdListener: ((RealtimeBioData?) -> Unit)? = null,
+    // Affective data.
+    listener: ((RealtimeAffectiveData?) -> Unit)? = null
+)
 ```
 
-
-#### 添加服务连接状态监听
-
-    fun addServiceConnectStatueListener(
-        connectionListener: () -> Unit,
-        disconnectListener: (String) -> Unit
-    )
-
-#### 移除服务连接状态监听
-
-    fun removeServiceConnectStatueListener(
-        connectionListener: () -> Unit,
-        disconnectListener: (String) -> Unit
-    )
-
-#### 当前离线计算服务是否启动
-
-    fun hasConnectAffectiveService(): Boolean
-
-#### 当前离线计算服务是否连接
-
-    fun hasConnectAffectiveService(): Boolean
-
-#### 关闭离线计算服务连接
+#### Unsubscribe from Data Callbacks
 
 ```kotlin
 /**
- * 断开
- * */
+ * Unsubscribe.
+ */
+IAffectiveDataAnalysisService.unSubscribeData(
+    bdListener: ((RealtimeBioData?) -> Unit)? = null,
+    listener: ((RealtimeAffectiveData?) -> Unit)? = null
+)
+```
+
+#### Restart the Offline Computing Service
+
+```kotlin
+/**
+ * Restart the offline computing service.
+ */
+IAffectiveDataAnalysisService.restoreAffectiveService(listener: IStartAffectiveServiceLister)
+```
+
+#### Finish the Offline Computing Service
+
+```kotlin
+IAffectiveDataAnalysisService.finishAffectiveService(listener: IFinishAffectiveServiceListener)
+
+IAffectiveDataAnalysisService.suspendFinishAffectiveService()
+```
+
+#### Analyze Local File Data
+
+```kotlin
+/**
+ * @param inputStream data stream to analyze
+ * @param callback result callback
+ * @param appSingleData handles a single data item. If true is returned, this data item is consumed and not added to all data.
+ * @param case converts each string read from the data stream to the required type R
+ * @param appendAllData handles all unconsumed data
+ */
+fun <R> readFileAnalysisData(
+    inputStream: InputStream,
+    appSingleData: ((R) -> Boolean)? = null,
+    appendAllData: (List<R>) -> Unit,
+    case: (String) -> R,
+    callback: Callback,
+)
+```
+
+#### Process Data
+
+```kotlin
+/**
+ * Send EEG data.
+ * isEar indicates whether the data is ear canal data.
+ */
+fun appendEEGData(brainData: ByteArray, isEar: Boolean = false)
+fun appendEEGData(brainData: Int, isEar: Boolean = false)
+fun appendEEGData(brainData: List<Int>, isEar: Boolean = false)
+
+/**
+ * Single-channel data.
+ * isEar indicates whether the data is ear canal data.
+ */
+fun appendSCEEGData(brainData: ByteArray, isEar: Boolean = false)
+fun appendSCEEGData(brainData: Int, isEar: Boolean = false)
+fun appendSCEEGData(brainData: List<Int>, isEar: Boolean = false)
+
+/**
+ * Add heart rate data.
+ */
+fun appendHeartRateData(heartRateData: Int)
+
+/**
+ * PEPR data.
+ */
+fun appendPEPRData(peprData: ByteArray)
+```
+
+#### Add a Service Connection Status Listener
+
+```kotlin
+fun addServiceConnectStatueListener(
+    connectionListener: () -> Unit,
+    disconnectListener: (String) -> Unit
+)
+```
+
+#### Remove a Service Connection Status Listener
+
+```kotlin
+fun removeServiceConnectStatueListener(
+    connectionListener: () -> Unit,
+    disconnectListener: (String) -> Unit
+)
+```
+
+#### Check Whether the Offline Computing Service Has Started
+
+```kotlin
+fun hasConnectAffectiveService(): Boolean
+```
+
+#### Check Whether the Offline Computing Service Is Connected
+
+```kotlin
+fun hasConnectAffectiveService(): Boolean
+```
+
+#### Close the Offline Computing Service Connection
+
+```kotlin
+/**
+ * Disconnect.
+ */
 fun closeAffectiveServiceConnection()
 ```
 
-#### 获取报表
+#### Get a Report
 
-相应返回的 report
-字段，具体字段的详细描述见[报表数据字段详情](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E6%8A%A5%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md)。
+For details about the returned `report` fields, see [Report Data Fields](https://github.com/Entertech/Enter-Affective-Offline-SDK/blob/main/%E6%8A%A5%E8%A1%A8%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E.md).
+
+```kotlin
+/**
+ * Get a report.
+ * @param needFinishService whether to automatically finish the offline computing service. true means finish automatically.
+ */
+fun getReport(listener: IGetReportListener, needFinishService: Boolean)
+
+/**
+ * Report callback interface.
+ */
+interface IGetReportListener {
+    /**
+     * Failed to get the report.
+     */
+    fun onError(error: Error?)
 
     /**
-     * 获取报表
-     * @param needFinishService 是否需要自动结束离线计算服务 true 自动结束
-     * */
-    fun getReport(listener: IGetReportListener, needFinishService: Boolean)
+     * Report retrieved successfully.
+     */
+    fun onSuccess(report: UploadReportEntity?)
 
     /**
-     * 获取报表接口
-     * */
-    interface IGetReportListener {
+     * Failed to get the bio basic data report.
+     */
+    fun getBioReportError(error: Error?)
 
-        /**
-         * 获取报表出错
-         * */
-        fun onError(error: Error?)
-
-
-        /**
-         * 获取报表成功
-         * */
-        fun onSuccess(report: UploadReportEntity?)
-
-        /**
-         * 获取生物基础数据报表出错
-         * */
-        fun getBioReportError(error: Error?)
-
-
-        /**
-         * 获取生理状态分析数据报表出错
-         * */
-        fun getAffectiveReportError(error: Error?)
-    }
-
-支持挂起函数
-
-```
-   suspend fun suspendGetReport(needFinishService: Boolean): UploadReportEntity?
+    /**
+     * Failed to get the affective state analysis data report.
+     */
+    fun getAffectiveReportError(error: Error?)
+}
 ```
 
+Coroutine support:
 
+```kotlin
+suspend fun suspendGetReport(needFinishService: Boolean): UploadReportEntity?
+```
 
-##### 脑波数据百分化
+##### Convert Brainwave Data to Percentages
 
-    BioDataUtils.brainwave2Rate(
-            alpha: Double,
-            beta: Double,
-            gamma: Double,
-            delta: Double,
-            theta: Double,
-            brainwaveRate: (
-                Double,
-                Double,
-                Double,
-                Double,
-                Double
-            ) -> Unit
-        )
+```kotlin
+BioDataUtils.brainwave2Rate(
+    alpha: Double,
+    beta: Double,
+    gamma: Double,
+    delta: Double,
+    theta: Double,
+    brainwaveRate: (
+        Double,
+        Double,
+        Double,
+        Double,
+        Double
+    ) -> Unit
+)
+```
 
-|      参数       |                                                          类型                                                           |                 说明                  |
-|:-------------:|:---------------------------------------------------------------------------------------------------------------------:|:-----------------------------------:|
-|     alpha     |                                                        Double                                                         |                                     |
-|     beta      |                                                        Double                                                         |                                     |
-|     gamma     |                                                        Double                                                         |                                     |
-|     delta     |                                                        Double                                                         |                                     |
-|     theta     |                                                        Double                                                         |                                     |
-| brainwaveRate | (            Double,             Double,             Double,             Double,             Double         ) -> Unit | 返回alpha，beta，gamma，delta，theta占比，小数 |
+| Parameter | Type | Description |
+|:--:|:--:|:--:|
+| alpha | Double |  |
+| beta | Double |  |
+| gamma | Double |  |
+| delta | Double |  |
+| theta | Double |  |
+| brainwaveRate | (Double, Double, Double, Double, Double) -> Unit | Returns the alpha, beta, gamma, delta, and theta ratios as decimals. |
 
-#### 流程图
+#### Flowchart
 
 ```mermaid
 graph LR
 
-设置连接情感云服务监听-->
-连接情感云服务-->
-启动情感云服务-->处理数据
-处理数据-->获取报表
-处理数据-->订阅数据解析
-订阅数据解析-->取消订阅
-取消订阅-->结束情感云服务
-取消订阅-->获取报表
-获取报表-->结束情感云服务-->
-关闭情感服务连接
-
+SetServiceConnectionListener-->
+ConnectAffectiveService-->
+StartAffectiveService-->ProcessData
+ProcessData-->GetReport
+ProcessData-->SubscribeDataAnalysis
+SubscribeDataAnalysis-->Unsubscribe
+Unsubscribe-->FinishAffectiveService
+Unsubscribe-->GetReport
+GetReport-->FinishAffectiveService-->
+CloseAffectiveServiceConnection
 ```
 
-#### 辅助功能
+#### Utilities
 
-##### **调式日志**
+##### Debug Logs
 
-如果调试阶段需要打印日志调用如下方法：
+Call the following method to print logs during debugging:
 
 ```kotlin
 AffectiveLogHelper.printer = object : ILogPrinter {
@@ -378,57 +388,66 @@ AffectiveLogHelper.printer = object : ILogPrinter {
 }
 ```
 
-内部默认使用DefaultLogPrinter
+The SDK uses `DefaultLogPrinter` internally by default.
 
-    object DefaultLogPrinter:ILogPrinter {
-        override fun d(tag: String, msg: String) {
-            Log.d(tag, msg)
-        }
-
-        override fun i(tag: String, msg: String) {
-            Log.i(tag, msg)
-        }
-
-        override fun e(tag: String, msg: String) {
-            Log.e(tag, msg)
-        }
+```kotlin
+object DefaultLogPrinter: ILogPrinter {
+    override fun d(tag: String, msg: String) {
+        Log.d(tag, msg)
     }
 
-##### 支持**串口单通道数据处理**（Sceeg）
+    override fun i(tag: String, msg: String) {
+        Log.i(tag, msg)
+    }
 
-###### 原始数据包结构
+    override fun e(tag: String, msg: String) {
+        Log.e(tag, msg)
+    }
+}
+```
 
-| 包头             | 包长度  | 脱落检测数据             | 第一个数据    | 第二个数据    | 第三个数据    | 第四个数据    | 第五个数据    | 校验位（单字节对比校验） | 包尾             |
-|:---------------|:-----|:-------------------|:---------|:---------|:---------|:---------|:---------|:-------------|:---------------|
-| 3字节            | 1字节  | 1字节                | 3个字节     | 3个字节     | 3个字节     | 3字节      | 3个字节     | 1字节          | 3字节            |
-| 0xBB-0xBB-0xBB | 0x18 | 0x00(0为佩戴正常，非0为脱落) | 00-01-02 | 03-04-05 | 06-07-08 | 09-0A-0B | 0C-0D-0E | 0x77         | 0xEE-0xEE-0xEE |
+##### Serial Single-Channel Data Processing (Sceeg)
 
-###### 解析完整的单通道数据
+###### Raw Data Packet Structure
 
-    SingleChannelEEGUtil.process(byteInt: Int, appendDataList: (List<Int>) -> Unit)
+| Header | Packet Length | Detachment Detection Data | First Data | Second Data | Third Data | Fourth Data | Fifth Data | Checksum (single-byte contrast check) | Tail |
+|:--|:--|:--|:--|:--|:--|:--|:--|:--|:--|
+| 3 bytes | 1 byte | 1 byte | 3 bytes | 3 bytes | 3 bytes | 3 bytes | 3 bytes | 1 byte | 3 bytes |
+| 0xBB-0xBB-0xBB | 0x18 | 0x00 (0 means worn normally; non-0 means detached) | 00-01-02 | 03-04-05 | 06-07-08 | 09-0A-0B | 0C-0D-0E | 0x77 | 0xEE-0xEE-0xEE |
 
-|       参数       |          类型          |                        说明                         |
-|:--------------:|:--------------------:|:-------------------------------------------------:|
-|    byteInt     |         Int          | Byte 转成0-255的int型，可通过CharUtil.converUnchart方法进行转换 |
-| appendDataList | (List\<Int>) -> Unit |                  处理一个有效的单通道数据的方法                  |
+###### Parse Complete Single-Channel Data
 
-###### 解析并放入算法处理单通道(Sceeg)数据
+```kotlin
+SingleChannelEEGUtil.process(byteInt: Int, appendDataList: (List<Int>) -> Unit)
+```
 
-     SingleChannelEEGUtil.process(byteInt,{sceegData->
-                affectiveService?.appendSCEEGData(sceegData)
-    })
+| Parameter | Type | Description |
+|:--:|:--:|:--:|
+| byteInt | Int | Byte converted to an int value from 0 to 255. You can convert it with `CharUtil.converUnchart`. |
+| appendDataList | (List\<Int>) -> Unit | Handles one valid single-channel data item. |
 
-### 常见问题
+###### Parse and Append Single-Channel (Sceeg) Data to the Algorithm
 
-#### 运行demo 报 dlopen failed: library "libaffective.so" not found
+```kotlin
+SingleChannelEEGUtil.process(byteInt) { sceegData ->
+    affectiveService?.appendSCEEGData(sceegData)
+}
+```
 
-使用adb命令查询目标设备或模拟器的架构
+### FAQ
 
-    adb shell getprop ro.product.cpu.abi
+#### The demo reports `dlopen failed: library "libaffective.so" not found`
 
-在项目application类型的组件下的gradle 中的android/defaultConfig添加下面配置代码。abi指的是目标设备或模拟器的架构。
+Use the following adb command to query the architecture of the target device or emulator:
 
-    ndk {
-                abiFilters abi
-        }
+```shell
+adb shell getprop ro.product.cpu.abi
+```
 
+Add the following configuration to `android/defaultConfig` in the Gradle file of the project application component. `abi` is the architecture of the target device or emulator.
+
+```groovy
+ndk {
+    abiFilters abi
+}
+```
